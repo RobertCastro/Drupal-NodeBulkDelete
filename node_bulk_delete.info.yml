@@ -1,0 +1,8 @@
+name: 'Node Bulk Delete'
+type: module
+author: 'Robert Castro'
+description: 'Permite la eliminación masiva de nodos por tipo de contenido y rango de fechas.'
+core_version_requirement: ^10
+package: Custom
+version: 1.0.0
+dependencies: [] 

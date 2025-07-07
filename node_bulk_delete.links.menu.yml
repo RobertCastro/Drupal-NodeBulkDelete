@@ -1,0 +1,6 @@
+node_bulk_delete.form:
+  title: 'Eliminación masiva de nodos'
+  description: 'Permite eliminar nodos por tipo de contenido y rango de fechas.'
+  parent: system.admin_config_content
+  route_name: node_bulk_delete.form
+  weight: 100 

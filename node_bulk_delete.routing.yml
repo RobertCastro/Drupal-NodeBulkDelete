@@ -1,0 +1,7 @@
+node_bulk_delete.form:
+  path: '/admin/content/node-bulk-delete'
+  defaults:
+    _form: '\Drupal\node_bulk_delete\Form\NodeBulkDeleteForm'
+    _title: 'Eliminación masiva de nodos'
+  requirements:
+    _permission: 'administer nodes' 

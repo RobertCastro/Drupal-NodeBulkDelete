@@ -1,0 +1,3 @@
+services:
+  node_bulk_delete.service:
+    class: 'Drupal\node_bulk_delete\Service\NodeBulkDeleteService' 
