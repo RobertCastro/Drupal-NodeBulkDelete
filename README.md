@@ -7,7 +7,7 @@ Este módulo permite la eliminación masiva de nodos en Drupal 10 según el tipo
 - **Eliminación masiva por filtros**: Selecciona tipo de contenido y rango de fechas
 - **Modo simulación (Dry Run)**: Permite previsualizar qué nodos se eliminarían sin ejecutar la eliminación
 - **Generación de archivos CSV**: Crea archivos CSV con ID y path de los nodos procesados
-- **Protección de contenido**: Excluye automáticamente el tipo de contenido "noticia"
+- **Protección de contenido**: Excluye automáticamente el tipo de contenido "noticias"
 - **Contadores en tiempo real**: Muestra cantidad de nodos totales y a eliminar mediante AJAX
 
 ## Estructura
@@ -58,8 +58,12 @@ Los archivos CSV se generan automáticamente en la carpeta pública de Drupal (`
 - **Columnas**: Node ID, Path
 - **Nombre**: `[prefijo]_YYYY-MM-DD_HH-MM-SS.csv`
 - **Prefijos**:
-  - `dry_run_nodes_`: Para simulaciones
-  - `deleted_nodes_`: Para eliminaciones reales
+  - `dry_run_nodes_`: Para simulaciones (generado antes del procesamiento)
+  - `deleted_nodes_`: Para eliminaciones reales (generado antes de eliminar)
+
+#### Momento de generación
+- **Simulación (Dry Run)**: El CSV se genera **inmediatamente** al iniciar el batch
+- **Eliminación real**: El CSV se genera **antes** de comenzar la eliminación para garantizar la captura de datos
 
 #### Ejemplo de contenido CSV
 ```csv
@@ -78,14 +82,24 @@ Node ID,Path
 - Todas las fechas se convierten a timestamp UTC
 
 ### Protecciones implementadas
-- **Exclusión automática**: El tipo de contenido "noticia" está excluido por defecto
+- **Exclusión automática**: El tipo de contenido "noticias" está excluido por defecto
 - **Validación de datos**: Se validan todos los campos antes de procesar
-- **Transacciones**: Las eliminaciones se ejecutan en lotes para evitar timeouts
+- **Procesamiento por lotes**: Utiliza Batch API para evitar timeouts y errores de memoria
 
-### Rendimiento
-- El módulo utiliza consultas optimizadas con `entityQuery`
-- Los nodos se cargan y eliminan en lotes para manejar grandes volúmenes
-- El sistema AJAX actualiza los contadores sin recargar la página
+### Rendimiento y optimización
+- **Batch API**: Procesa nodos en lotes para manejar grandes volúmenes sin timeouts
+- **Eliminación optimizada**: Utiliza consultas SQL directas en lugar de Entity API para máximo rendimiento
+- **Tamaño de lotes configurables**:
+  - **20 nodos por lote** para eliminación real (balanceando velocidad y estabilidad)
+  - **50 nodos por lote** para simulación (más rápido al no eliminar realmente)
+- **Limpieza completa**: Elimina automáticamente revisiones, datos de campo y cache relacionado
+- **Monitoreo en tiempo real**: Muestra tiempo de ejecución por lote en milisegundos
+
+### Arquitectura del procesamiento
+- **Eliminación directa por SQL**: Evita hooks lentos y carga innecesaria de entidades
+- **Limpieza manual de tablas**: Elimina datos de `node`, `node_revision` y tablas de campo
+- **Reset de cache**: Limpia automáticamente el cache de nodos para consistencia
+- **Manejo de errores**: Try-catch por lote con logging detallado
 
 ### Permisos requeridos
 - Acceso a las páginas de administración de contenido
@@ -116,4 +130,4 @@ Para agregar nuevos filtros o modificar el comportamiento:
 3. Ajuste las validaciones según sea necesario
 
 ### Logging
-El módulo incluye logging detallado para depuración. Los logs se escriben en el canal `node_bulk_delete`. 
+El módulo incluye logging detallado para depuración. Los logs se escriben en el canal `node_bulk_delete`.

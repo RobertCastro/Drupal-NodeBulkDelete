@@ -49,7 +49,7 @@ class NodeBulkDeleteService {
    *   Array con información de nodos ['nid' => int, 'path' => string]
    */
   public function getNodesInfo($content_type, $start, $end) {
-    if ($content_type === 'noticia') {
+    if ($content_type === 'noticias') {
       return [];
     }
     if (!$start || !$end) {
@@ -91,7 +91,7 @@ class NodeBulkDeleteService {
    *   Número de nodos eliminados.
    */
   public function deleteNodes($content_type, $start, $end) {
-    if ($content_type === 'noticia') {
+    if ($content_type === 'noticias') {
       return 0;
     }
     if (!$start || !$end) {
@@ -112,4 +112,4 @@ class NodeBulkDeleteService {
     $storage->delete($nodes);
     return $count;
   }
-} 
+}
